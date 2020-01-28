@@ -1,5 +1,13 @@
 package com.example.encount.friend
 
+import android.content.Context
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
+import com.example.encount.user.UserFriendList
+import com.example.encount.user.UserLikeList
+import com.example.encount.user.UserPostList
+
 //import kotlinx.android.synthetic.main.post_list.view.*
 //import kotlinx.android.synthetic.main.post_list.view.UserIcon
 //import kotlinx.android.synthetic.main.post_list.view.UserId
@@ -38,4 +46,30 @@ class FriendAdapter(val context: Context, val posts: List<PostList>): BaseAdapte
         return view
     }
 }*/
+class TabAdapter(fm: FragmentManager, private val context: Context): FragmentPagerAdapter(fm,
+    BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+) {
 
+    override fun getItem(i: Int): Fragment {
+
+        when (i) {
+            0 -> return UserPostList()
+            1 -> return UserFriendList()
+            else -> return UserLikeList()
+        }
+
+    }
+
+    override fun getCount(): Int {
+        return 3
+    }
+
+    override fun getPageTitle(position: Int): CharSequence? {
+        when (position) {
+            0 -> return "投稿"
+            1 -> return "フレンド"
+            else -> return "いいね"
+        }
+    }
+
+}

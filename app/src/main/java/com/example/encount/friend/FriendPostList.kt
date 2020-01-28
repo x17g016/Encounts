@@ -1,17 +1,13 @@
-package com.example.encount.user
+package com.example.encount.friend
 
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.encount.PostDataClassList
-import com.example.encount.PostList
-import com.example.encount.R
-import com.example.encount.SQLiteHelper
+import com.example.encount.*
 import com.example.encount.post.PostAdapter
 import com.example.encount.post.PostDetails
 import com.google.gson.Gson
@@ -23,19 +19,15 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 import java.lang.Exception
+//user_idの値を変えること
+class FriendPostList : Fragment() {
 
-class UserLikeList : Fragment() {
+    var _helper : SQLiteHelper? = null
 
-    var _helper: SQLiteHelper? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.activity_user_like_list, container, false)
+        return inflater.inflate(R.layout.activity_user_post_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,10 +36,10 @@ class UserLikeList : Fragment() {
 
         swipelayout.setColorSchemeResources(R.color.colorMain)
 
-        UserLikeGet().execute()
+        UserPostGet().execute()
 
         //タップで投稿の詳細画面へ
-        UserProfilePost.setOnItemClickListener { parent, view, position, id ->
+        UserProfilePost.setOnItemClickListener {parent, view, position, id ->
 
             view.image_view.setOnClickListener {
 
@@ -56,7 +48,7 @@ class UserLikeList : Fragment() {
                 startActivity(intent)
             }
 
-            view.ivPostLike.setOnClickListener {
+            view.ivPostLike.setOnClickListener{
 
                 //Log.d("debugdayio",postId)
             }
@@ -70,11 +62,11 @@ class UserLikeList : Fragment() {
 
         swipelayout.setOnRefreshListener {
 
-            UserLikeGet().execute()
+            UserPostGet().execute()
         }
     }
 
-    private inner class UserLikeGet() : AsyncTask<String, String, String>() {
+    private inner class UserPostGet() : AsyncTask<String, String, String>() {
 
         override fun doInBackground(vararg params: String): String {
 
@@ -83,7 +75,7 @@ class UserLikeList : Fragment() {
             val sql = "select * from userInfo"
             val cursor = db.rawQuery(sql, null)
 
-            while (cursor.moveToNext()) {
+            while(cursor.moveToNext()){
 
                 val idxId = cursor.getColumnIndex("user_id")
                 id = cursor.getString(idxId)
@@ -92,23 +84,24 @@ class UserLikeList : Fragment() {
             val client = OkHttpClient()
 
             //アクセスするURL
-            val url = "https://encount.cf/encount/UserLikeGet.php"
+            val url = "https://encount.cf/encount/UserPostGet.php"
 
             //Formを作成
             val formBuilder = FormBody.Builder()
 
             //formに要素を追加
-            formBuilder.add("id", id)
+            formBuilder.add("id",id)
             //リクエストの内容にformを追加
             val form = formBuilder.build()
-            Log.d("debug","tigau")
+
             //リクエストを生成
             val request = Request.Builder().url(url).post(form).build()
 
             try {
                 val response = client.newCall(request).execute()
                 return response.body()!!.string()
-            } catch (e: IOException) {
+            }
+            catch (e: IOException) {
                 e.printStackTrace()
                 return "Error"
             }
@@ -136,13 +129,14 @@ class UserLikeList : Fragment() {
 
                 UserProfilePost.adapter = PostAdapter(context, postList)
                 swipelayout.isRefreshing = false
-            } catch (e: Exception) {
+            }
+            catch(e : Exception){
 
             }
         }
     }
 
-    override fun onDestroy() {
+    override fun onDestroy(){
 
         //ヘルパーオブジェクトの開放
         _helper!!.close()

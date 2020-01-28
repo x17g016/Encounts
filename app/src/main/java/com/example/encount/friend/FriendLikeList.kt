@@ -1,4 +1,4 @@
-package com.example.encount.user
+package com.example.encount.friend
 
 import android.content.Intent
 import android.os.AsyncTask
@@ -24,7 +24,7 @@ import okhttp3.Request
 import java.io.IOException
 import java.lang.Exception
 
-class UserLikeList : Fragment() {
+class FriendLikeList : Fragment() {
 
     var _helper: SQLiteHelper? = null
 
